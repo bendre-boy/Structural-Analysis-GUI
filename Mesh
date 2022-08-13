@@ -1,0 +1,18 @@
+clc; clear;
+
+%% Defining plate geometry
+
+global O BL BR TL TR a b
+
+O = [0,0]; % Origin of plate
+BL = [-50,-100]; % Bottom left corner of the plate
+BR = [50,-100]; % Bottom right corner of the plate
+TL = [-50,100]; % Top left corner of the plate
+TR = [50,100]; % Top right corner of the plate
+a = [10,0]; % Semi-major axis of ellipse
+b = [0,5]; % Semi-minor axis of ellipse
+
+%% Meshing
+
+x_elements = 20; % No of elements along x-axis
+dx = (BR(1) - O(1))/x_elements; % Calculating element width
