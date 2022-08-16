@@ -9,10 +9,43 @@ BL = [-50,-100]; % Bottom left corner of the plate
 BR = [50,-100]; % Bottom right corner of the plate
 TL = [-50,100]; % Top left corner of the plate
 TR = [50,100]; % Top right corner of the plate
-a = [10,0]; % Semi-major axis of ellipse
-b = [0,5]; % Semi-minor axis of ellipse
+a = str2num(input("Enter semi-major axis","s")); % Semi-major axis of ellipse
+b = str2num(input("Enter semi-minor axis","s")); % Semi-minor axis of ellipse
+
+elements_bottom = str2num(input("Enter number of elements along bottom edge","s"));
+elements_left = str2num(input("Enter number of elements along left edge","s"));
+elements_top = str2num(input("Enter number of elements along top edge","s"));
 
 %% Meshing
+x = []; y = [];
+if a > b
+    xdiv1 = linspace(a,TR(1),elements_bottom);
+    ydiv1 = linspace(0,TR(2),elements_left);
+    [X1,Y1] = meshgrid(xdiv1,ydiv1);
 
-x_elements = 20; % No of elements along x-axis
-dx = (BR(1) - O(1))/x_elements; % Calculating element width
+    xdiv2 = linspace(0,a,(elements_top-elements_bottom));
+
+    count = 1;
+    for i= 1:size(ydiv1,2)
+        if ydiv1(i) >= b
+            ydiv2(count,1) = ydiv1(i);
+            count = count + 1;
+        end
+    end
+    [X2,Y2] = meshgrid(xdiv2,ydiv2);
+
+plot(X2,Y2)
+end
+count = 1;
+for theta = 0:15:90
+    x(count,1) = a.*cosd(theta);
+    y(count,1) = b.*sind(theta);
+    count = count + 1;
+end
+
+
+
+figure(2)
+plot(x,y)
+figure(3)
+plot(X1,Y1)
