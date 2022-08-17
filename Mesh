@@ -12,40 +12,54 @@ TR = [50,100]; % Top right corner of the plate
 a = str2num(input("Enter semi-major axis","s")); % Semi-major axis of ellipse
 b = str2num(input("Enter semi-minor axis","s")); % Semi-minor axis of ellipse
 
-elements_bottom = str2num(input("Enter number of elements along bottom edge","s"));
-elements_left = str2num(input("Enter number of elements along left edge","s"));
 elements_top = str2num(input("Enter number of elements along top edge","s"));
+elements_left = str2num(input("Enter number of elements along left edge","s"));
+
 
 %% Meshing
-x = []; y = [];
+
 if a > b
-    xdiv1 = linspace(a,TR(1),elements_bottom);
-    ydiv1 = linspace(0,TR(2),elements_left);
-    [X1,Y1] = meshgrid(xdiv1,ydiv1);
+    xdiv2_1 = linspace(O(1),a,(elements_top/2));
+    xdiv2_2 = linspace(a,TR(1),(elements_top/2));
+    xdiv_region1 = [xdiv2_1,xdiv2_2(:,2:end)];
+    ydiv_region1 = linspace(b,TR(2),elements_left);
+    
+    [X1,Y1] = meshgrid(xdiv_region1,ydiv_region1);
 
-    xdiv2 = linspace(0,a,(elements_top-elements_bottom));
-
-    count = 1;
-    for i= 1:size(ydiv1,2)
-        if ydiv1(i) >= b
-            ydiv2(count,1) = ydiv1(i);
-            count = count + 1;
-        end
-    end
-    [X2,Y2] = meshgrid(xdiv2,ydiv2);
-
-plot(X2,Y2)
+for i = 1:size(xdiv2_1,2)
+    ydiv_region2(1,i) = ((1-(xdiv2_1(1,i)/a)^2)*(b^2))^0.5;
 end
-count = 1;
-for theta = 0:15:90
-    x(count,1) = a.*cosd(theta);
-    y(count,1) = b.*sind(theta);
-    count = count + 1;
+ydiv_region2 = fliplr(ydiv_region2);
+Y1_temp = zeros((size(ydiv_region2,2)-1),size(Y1,2));
+
+for i = 1:(size(ydiv_region2,2)-1)
+    Y1_temp(i,:) = ydiv_region2(i);
+end
+Y = [Y1_temp(:,:);Y1(:,:)];
+
+X1_temp = X1(1:size(Y1_temp,1),:);
+X = [X1_temp(:,:);X1(:,:)];
+
+Y_cell = num2cell(Y);
+X_cell = num2cell(X);
+
+Y2 = Y;
+for i = 1:size(ydiv_region2,2)-1
+    Y2(1:size(ydiv_region2,2)-i,i) = 0;
 end
 
+end
 
+%%
+clf;
+figure(1)
+plot(X,Y)
+hold on
+plot(xdiv2_1,fliplr(ydiv_region2))
+hold off
 
-figure(2)
-plot(x,y)
-figure(3)
-plot(X1,Y1)
+figure(5)
+plot(X,Y2)
+hold on
+plot(xdiv2_1,fliplr(ydiv_region2))
+hold off
